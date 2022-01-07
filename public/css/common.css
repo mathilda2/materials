@@ -1,0 +1,111 @@
+.btn-box{
+	display: flex;
+	justify-content: space-around;
+	margin-top: 10px;
+}
+.add-button{
+	width: 60px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	border-radius: 3px;
+	background: #1976d2; 
+	color: #fff;
+	cursor: pointer;
+}
+.btn{
+	width: 100px;
+	height: 30px;
+	text-align: center;
+	line-height: 30px;
+	background-color: #00c5f6 ;
+	color: #fff !important;
+	border-radius: 3px;
+	transition: all 3s linear 3s;
+}
+.cancel{
+	background: #ccc !important;
+}
+.btn:hover{
+	background-image: linear-gradient(to right ,red,orange);
+}
+.selectT{
+	width: 190px;
+	height: 30px;
+}
+.search,.reset{
+	background: #17d71a;
+}
+.active{
+	background: orange !important;
+	color: #fff !important;
+}
+.inut-default{
+	outline: none;
+	border: none;
+	border: 1px solid #bbb;
+	padding: 5px 10px;
+	width: 280px;
+	appearance: auto ; /*对vuetify的优化*/
+}
+.input-large{
+	outline: none;
+	border: none;
+	border: 1px solid #bbb;
+	padding: 3px 10px;
+	width: 100%;
+	appearance: auto ; /*对vuetify的优化*/
+}
+.inut-default:hover{
+	outline-color: re;
+}
+.input-submit{
+	border: none;
+	outline: none;
+	height: 30px;
+	width: 90px;
+	background: #EF8100; 
+	color: #fff;
+	border-radius: 5px;
+}
+input[type='file']{
+	border: none;
+}
+.default{
+	background: #ccc;
+}
+.textarea-large{
+	outline: none;
+	border: none;
+	border: 1px solid #bbb;
+	width: 100%;
+}
+.choose-active{
+	background: #fce090;
+}
+.choose-active:before{
+	content: ' ';
+	width: 5px;
+	height: 30px;
+	border-radius: 3px;
+	background: orange;
+	display: inline-block;
+	position: absolute;
+	left: 1px;
+	top: 50%;
+	transform: translate(-50%, -50%);  
+}
+.person-mes{
+	color:orange !important;
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+}
+@keyframes changeColor{
+	from {
+		 background-image: linear-gradient(to right,red,orange);
+		}
+	to {
+		  background-image: linear-gradient(to right,orange,red);
+		}
+}
