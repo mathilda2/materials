@@ -3,69 +3,138 @@
 		<div class="containerT">
 			<div class="content">
 				<div class="message-content">
-					<div class="message-content-title">作者：math 时间：2012-12-12</div>
+					<div class="message-content-title">{{message.messageTitle}}</div>
+					<div class="message-content-info">作者：{{message.user.userName}} 时间：{{message.createDate}}</div>
 					<div class="message-content-divide"></div>
 					<div class="message-content-detail">
-						养狗对社会造成的负担与影响很大，狗屎狗尿增加周边环境负担，加重环卫工人劳动，狗尿具有强烈腐蚀性，对路灯、车轮等极具破坏性，增加社会公共投入，狗能咬人，属于社会不安定因素。养狗都要登记的，增加社会管理成本。因此，养狗应当额外纳税。社会资源税、公共服务税。对于随地大小便的还要罚款。
+						{{message.messageDesc}}
 					</div>
 				</div>
 				<div class="message-publish">
 					<div class="message-publish-content">
-						<textarea name="" placeholder="俺来说说" maxlength="150" v-model="content" ></textarea>
-						<span>{{content.length}}/150</span>
+						<textarea name="" placeholder="俺来说说" maxlength="500" v-model="content" ></textarea>
+						<span>{{content.length}}/500</span>
 					</div>
 					<div class="message-publish-footer">
 						<div class="message-publish-author-name">
 							<div class="message-publish-author-image">
 								<img src="../assets/logo.png"/>
 							</div>
-							<span>yzh</span>
+							<span>{{user.userName}}</span>
 						</div>
-						<div class="message-publish-button">发布</div>
+						<div class="message-publish-button" @click="submit">发布</div>
 					</div>
-				</div>
-				<div class="message-leave" v-for="(i,item) in 10" :key="i">
+				</div> 
+				<div class="message-leave" v-for="(item,i) in commentList" :key="i">
 					<div class="message-total">
 						<div class="message-leave-person">
 							<div class="message-leave-person-image"> 
 								<img src="../assets/logo.png"/>
 							</div>
+						</div>
+						<div class="message-leave-detailbox">
 							<div class="message-leave-person-info">
-								<div class="message-leave-person-name">math</div>
-								<div class="message-leave-person-email">23232322</div>
+								<div class="message-leave-person-name">{{item.user.userName}} <span class="message-date">{{item.createDate}}</span></div>
+							</div>
+							<div class="message-leave-detail">
+								{{item.content}}
 							</div>
 						</div>
-						<div class="message-leave-detail">
-							{{item}}中国人民银行有关负责人介绍，短期个别介绍，短期个别介绍，短别介绍，短期个别介绍，短期个别介绍，短期个期个别介绍，短期个期个别介绍，短期个期个别介绍，短期个别介绍，短期个别介绍，短期个别介绍，短期个别介绍，短期个别房企出现风险，不会影响中长期市场的正常融资功能。近期，境内房地产销售、购地、融资等行为已逐步回归常态
-						</div>
 					</div>
-					<div class="message-leave-date">2121年12月12日</div>
+					<!--<div class="message-leave-date">2121年12月12日</div>-->
 				</div>
-				<div class="message-loadmore" v-if="nodata">
-					<span class="loadmore">加载更多...</span>
+				<div class="message-loadmore" v-if="this.commentList.length<this.pagination.total">
+					<span class="loadmore" @click="loadmore">加载更多...</span>
 				</div>
-				<no-data v-if="!nodata"></no-data>
+				<no-data v-if="this.commentList.length==this.pagination.total&&this.commentList.length!=0"></no-data>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-import NoData from '../components/NoData'
+import NoData from '../components/NoData';
+import {mapState} from 'vuex';
 export default{
 	name:'messageDetail',
 	data(){
 		return{
 			list:[],
-			nodata:true,
 			textSize:0,
-			content:''
+			content:'',
+			message:{
+				user:{}
+			},
+			commentList:[],
+			pagination:{
+				pageNum:1,
+				size: 10,
+				pages:0,
+				total:0
+			}
 		}
 	},
 	components:{
 		NoData
 	},
 	methods:{
+		submit(){
+			let params = {
+				user:this.user,
+				messageId:this.$route.query.id,
+				content:this.content
+			}
+			this.axios.post('/comment/save',params).then((res)=>{
+				const{data} = res;
+				if(data.success){
+					alert(data.message);
+					this.content = '';
+					this.commentList = [];
+					this.getCommentListByMessageId(this.$route.query.id);
+				}
+			})
+		},
+		loadmore(){
+			if(this.pagination.pageNum < this.pagination.pages){
+				this.pagination.pageNum +=1;
+				this.getCommentListByMessageId(this.$route.query.id);
+			}
+		},
+		getCommentListByMessageId(id){
+			let that = this;
+			let param = {
+				messageId:id
+			};
+			let params = Object.assign(this.pagination,param);
+			this.axios.post('/comment/list',params).then((res)=>{
+				const{data} = res;
+				if(data.success){
+					that.commentList = that.commentList.concat(data.content.list);
+					for(var i = 0 ; i < this.commentList.length ; i++){
+						this.commentList[i].createDate = this.formatDate(this.commentList[i].createDate);
+					}
+					that.pagination.pages = data.content.pages;
+					that.pagination.total = data.content.total;
+				}
+			})
+		},
+		getMessageDetail(id){
+			let that = this;
+			this.axios.post('/message/getMessageDetail',{id:id}).then((res)=>{
+				const{data} = res;
+				if(data.success){
+					that.message = data.content;
+					that.message.createDate = this.formatDate(that.message.createDate);
+				}
+			});
+		}
+	},
+	mounted(){
+		this.getCommentListByMessageId(this.$route.query.id);
+		this.getMessageDetail(this.$route.query.id);
+	},
+	computed:{
+		...mapState(['user'])
 	}
 }
 </script>
@@ -78,15 +147,25 @@ export default{
 		.content{
 			border-top: 1px solid #ccc;
 			min-height: 520px;
+			margin-bottom: 10px;
 			.message-content{
 				background: #fff;
 				width: 100%;
-				height: 160px;
+				/*height: 160px;*/
 				margin-bottom:10px;
 				.message-content-title{
 					text-align: center;
+					padding-top: 10px;
+					height: 100px;
+					line-height: 100px;
+					font-size: 28px;
+					font-weight: bold;
+				}
+				.message-content-info{
+					text-align: center;
 					height: 50px;
 					line-height: 50px;
+					font-size: 14px;
 				}
 				.message-content-divide{
 					width: 300px;
@@ -163,7 +242,6 @@ export default{
 				display: flex;
 				padding: 10px;
 				align-items: center;
-				height: 70px;
 				justify-content: space-between;
 				border-bottom: 1px solid #ccc;
 				&:last-child{
@@ -171,9 +249,8 @@ export default{
 				}
 				.message-total{
 					display: flex;
-					align-items: center;
+					justify-content: space-between;
 					.message-leave-person{
-						display: flex;
 						.message-leave-person-image{
 							width: 50px;
 							height: 50px;
@@ -188,23 +265,32 @@ export default{
 								transform: rotate(360deg);
 							}
 						}
+					}
+					.message-leave-detailbox{
+						flex-grow: 1;
 						.message-leave-person-info{
-							margin-left: 5px;
+							margin-left: 10px;
+							margin-bottom: 5px;
 							font-size: 14px;
 							display: flex;
 							flex-direction: column;
-							justify-content: space-around;
+							justify-content: space-between;
 							.message-leave-person-name{
+								color: #3C3C3C;
+								.message-date{
+									color: #aaa;
+								}
 							}
 							.message-leave-person-email{
 							}
 						}
+						.message-leave-detail{
+							margin-left: 10px;
+							font-size: 14px;
+							line-height: 20px;
+						}
 					}
-					.message-leave-detail{
-						margin-left: 10px;
-						font-size: 14px;
-						line-height: 20px;
-					}
+					
 				}
 				.message-leave-date{
 					flex-shrink: 0;

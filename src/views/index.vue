@@ -126,11 +126,12 @@
 								<div class="list-title-name">{{item.typeDesc}}</div>
 								<div class="list-title-more"><a href="javascript:;">更多</a></div>
 							</div>
-							<ul class="list-item">
-								<li class="list-item-content" v-for="(childItem,j) in item.childList" :key="j">
+							<ul class="list-item" v-if="item.childList.length>0">
+								<li class="list-item-content"  v-for="(childItem,j) in item.childList" :key="j">
 									<router-link :to="{path:'/messageDetail',query:{id:childItem.id}}">{{childItem.messageTitle}}</router-link> 
 								</li>
 							</ul>
+							<no-recom-data v-else></no-recom-data>
 						</div>
 					</div>
 				</div>
@@ -160,10 +161,12 @@
 import Modal from '../components/Modal'
 import sessionStorage from '../storage'
 import {mapState} from 'vuex';
+import NoRecomData from '../components/NoRecomData'
 export default{
 	name:'index',
 	components:{
-		Modal
+		Modal,
+		NoRecomData
 	},
 	data(){
 		return{

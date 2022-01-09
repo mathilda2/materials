@@ -18,7 +18,6 @@
 		line-height: 30px;
 		border-radius: 5px;
 		font-size: 18px;
-		cursor: pointer;
 	}
 }
 </style>

@@ -101,11 +101,3 @@ input[type='file']{
 	width: 100%;
 	height: 100%;
 }
-@keyframes changeColor{
-	from {
-		 background-image: linear-gradient(to right,red,orange);
-		}
-	to {
-		  background-image: linear-gradient(to right,orange,red);
-		}
-}
