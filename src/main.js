@@ -19,6 +19,8 @@ Vue.use(Antd);
 Vue.use(message);
 Vue.prototype.formatDate = formatDate;
 Vue.prototype.$message=message;
+Vue.prototype.PICTURE_HOST =  process.env.VUE_APP_PICTURE_HOST;
+console.log( process.env.VUE_APP_PICTURE_HOST);
 //axios.defaults.baseURL = '/api';
 axios.defaults.baseURL = process.env.VUE_APP_SERVER;
 axios.defaults.withCredentials = true;//允许跨域携带cookie信息

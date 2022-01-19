@@ -4,28 +4,29 @@
 			<div class="content">
 				<div class="search-content">
 					<div class="search-content-box">
-						<input type="text" name="" id="" value="" />
+						<input type="text" name=""  v-model="messageTitle" />
+						<span class="search-close" v-if="messageTitle" @click="searchClose"></span>
 					</div>
-					<div class="search-conent-button">搜索</div>
+					<div class="search-conent-button" @click="search">搜索</div>
 				</div>
 				<div class="search-all-category">
 					<span>所有分类：</span>
 					<div class="search-all-area">
 						<div class="search-all-type">
 							<span class="search-all-content"  v-for="(item,i) in myAreaList" :key="i">
-								地区 : {{item.areaName}}
+								地区 : {{item.areaDesc}}
 								<span class="search-close" @click="closeArea(i)"></span>
 							</span>
 						</div>
 						<div class="search-all-type">
 							<span  class="search-all-content"  v-for="(item,i) in myValueList" :key="i">
-								属性 : {{item.valueName}}
+								属性 : {{item.salesTypeDesc}}
 								<span class="search-close" @click="closeValue(i)"></span>
 							</span>
 						</div>
 						<div class="search-all-type"  v-for="(item,i) in myTypeList" :key="i">
 							<span  class="search-all-content">
-								类型 : {{item.typeName}}
+								类型 : {{item.typeDesc}}
 								<span class="search-close" @click="closeType(i)"></span>
 							</span>
 						</div>
@@ -35,32 +36,30 @@
 					<div class="search-detail-area-box" v-if="myAreaList.length==0">
 						<span>地区：</span>
 						<div class="search-detail-area" v-for="(item,i) in areaList" :key="i">
-							<span @click="chooseArea(i)">{{item.areaName}}</span>
+							<span @click="chooseArea(i)">{{item.areaDesc}}</span>
 						</div>
 					</div>
 					<div class="search-detail-value-box" v-if="myValueList.length==0">
 						<span>属性：</span>
 						<div class="search-detail-value" v-for="(item,i) in valueList" :key="i">
-							<span @click="chooseValue(i)">{{item.valueName}}</span>
+							<span @click="chooseValue(i)">{{item.salesTypeDesc}}</span>
 						</div>
 					</div>
 					<div class="search-detail-type-box" v-if="myTypeList.length==0">
 						<span>类型：</span>
 						<div class="search-detail-type"  v-for="(item,i) in typeList" :key="i">
-							<span @click="chooseType(i)">{{item.typeName}}</span>
+							<span @click="chooseType(i)">{{item.typeDesc}}</span>
 						</div>
 					</div>
 				</div>
 				<div class="search-result">
-					<div class="search-result-detail" v-for="(item,i) in 10" :key="i">
+					<div class="search-result-detail" v-for="(item,i) in messageList" :key="i" @click="goToDetail(item.id)">
 						<div class="search-result-detail-content">
-							qweqweqeqweqweqweqweqweqweqweqweqweqweqweqweqweqwqweqweqwqqwqweqweqwqweqweqwqweqweqw
-							qweqweqeqweqweqweqweqweqweqweqweqweqweqweqweqweqw
-							qweqweqeqweqweqweqweqweqweqweqweqweqweqweqweqweqw
+							<a href="javascript:;">{{item.messageTitle}} </a>
 						</div>
 						<div class="search-result-detail-info">
-							<div class="search-result-detail-name">math</div>
-							<div class="search-result-detail-date">2021-20-34</div>
+							<div class="search-result-detail-name">{{item.user.userName}}</div>
+							<div class="search-result-detail-date">{{item.createDate}}</div>
 						</div>
 					</div>
 				</div>
@@ -70,81 +69,131 @@
 </template>
 
 <script>
-
 export default{
 	name:'messageCenter',
 	data(){
 		return{
-			areaList:[{
-				"areaName":"北京",
-				"id":"1001"
-			},{
-				"areaName":"上海",
-				"id":"1002"
-			},{
-				"areaName":"纽约",
-				"id":"1003"
-			},{
-				"areaName":"台湾",
-				"id":"1004"
-			}],
-			valueList:[{
-				"valueName":"商学院",
-				"id":"1001"
-			},{
-				"valueName":"医学院",
-				"id":"1002"
-			},{
-				"valueName":"国学院",
-				"id":"1003"
-			}],
-			typeList:[{
-				"typeName":"一手",
-				"id":"1001"
-			},{
-				"typeName":"二手",
-				"id":"1002"
-			},{
-				"typeName":"三手",
-				"id":"1003"
-			},{
-				"typeName":"死守",
-				"id":"1004"
-			}],
+			areaList:[],
+			valueList:[],
+			typeList:[],
 			myAreaList:[],
 			myValueList:[],
 			myTypeList:[],
+			messageList:[],
+			messageTitle:'',
+			
 		}
 	},
 	components:{
 	},
 	methods:{
+		goToDetail(obj){
+			this.$router.push({
+				path:'messageDetail',
+				query:{
+					id:obj,
+				}
+			});
+		},
+		searchClose(){
+			this.messageTitle = '';
+			this.search();
+		},
+		search(){
+			let params  = {
+				area:this.myAreaList[0],
+				type:this.myTypeList[0],
+				salesType:this.myValueList[0],
+				messageTitle:this.messageTitle
+			};
+			let that = this;
+			this.axios.post('/message/list',params).then((res)=>{
+				const{data} = res;
+				this.data = data.content.list;
+				if(data.success){
+					that.messageList = data.content.list;
+					for(var i = 0 ; i < this.data.length ; i++){
+						this.data[i].createDate = this.formatDate(this.data[i].createDate);
+					}
+				}
+			});
+		},
 		chooseArea(index){
 			this.myAreaList.push(this.areaList[index]);
 			this.areaList.splice(index,1);
+			this.search();
 		},
 		chooseValue(index){
 			this.myValueList.push(this.valueList[index]);
 			this.valueList.splice(index,1);
+			this.search();
 		},
 		chooseType(index){
 			this.myTypeList.push(this.typeList[index]);
 			this.typeList.splice(index,1);
+			this.search();
 		},
 		closeArea(index){
 			this.areaList.push(this.myAreaList[index]);
 			this.myAreaList.splice(index,1);
+			this.search();
 		},
 		closeValue(index){
 			this.valueList.push(this.myValueList[index]);
 			this.myValueList.splice(index,1);
+			this.search();
 		},
 		closeType(index){
 			this.typeList.push(this.myTypeList[index]);
 			this.myTypeList.splice(index,1);
+			this.search();
 		},
+		getTypeList(){
+			this.axios.post('/type/list',{}).then((res)=>{
+				const{data} = res;
+				if(data.success){
+					this.typeList = data.content.list;
+					for(let i = 0 ; i < this.typeList.length ; i++){
+						if(this.typeList[i].id==  this.$route.query.typeSearch){
+							this.chooseType(i);
+						}
+					}
+				}
+			});
+		},
+		getSalesTypeList(){
+			this.axios.post('/salesType/list',{}).then((res)=>{
+				const{data} = res;
+				if(data.success){
+					this.valueList = data.content.list;
+					for(let i = 0 ; i < this.valueList.length ; i++){
+						if(this.valueList[i].id==  this.$route.query.salesTypeSearch){
+							this.chooseValue(i);
+						}
+					}
+				}
+			});
+		},
+		getAreaList(){
+			this.axios.post('/area/list',{}).then((res)=>{
+				const{data} = res;
+				if(data.success){
+					this.areaList = data.content.list;
+					for(let i = 0 ; i < this.areaList.length ; i++){
+						if(this.areaList[i].id==  this.$route.query.areaSearch){
+							this.chooseArea(i);
+						}
+					}
+				}
+			});
+		}
 	},
 	mounted(){
+		this.getAreaList();
+		this.getTypeList();
+		this.getSalesTypeList();
+		this.messageTitle = this.$route.query.nameSearch;
+		this.search();
 	}
 }
 </script>
@@ -163,6 +212,7 @@ export default{
 				justify-content: center;
 				align-items: center;
 				.search-content-box{
+					position:relative;
 					input{
 						width: 600px;
 						height: 40px;
@@ -170,6 +220,17 @@ export default{
 						outline: none;
 						border: 1px solid orange;
 						padding-left: 10px;
+					}
+					.search-close{
+						background: url(../../public/img/search-close.svg) no-repeat center;
+						position: absolute;
+						cursor: pointer;
+						right: 5px;
+						top: 50%;
+						transform: translateY(-50%);
+						width: 25px;
+						height: 25px;
+						background-size: 25px;
 					}
 				}
 				.search-conent-button{
@@ -235,10 +296,10 @@ export default{
 						display:flex;
 						span{
 							display:flex;
-							width: 60px;
+							width: 80px;
 							height: 20px;
 							display: inline-block;
-							text-align: center;
+							text-align: left;
 							cursor: pointer;
 							&:hover{
 								color: orangered;
@@ -262,7 +323,7 @@ export default{
 							width: 60px;
 							height: 20px;
 							display: inline-block;
-							text-align: center;
+							text-align: left;
 							cursor: pointer;
 							&:hover{
 								color: orangered;
@@ -282,10 +343,10 @@ export default{
 						display:flex;
 						span{
 							display:flex;
-							width: 60px;
+							width: 90px;
 							height: 20px;
 							display: inline-block;
-							text-align: center;
+							text-align: left;
 							cursor: pointer;
 							&:hover{
 								color: orangered;

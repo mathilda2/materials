@@ -232,12 +232,14 @@ export default{
 			const mess = Object.assign({}, e) ;
 			this.message = mess;
 			this.type = "";
+			this.title="修改";
 			this.showModal = !this.showModal;
 		},
 		viewItem(record){
 			this.message = record;
 			this.showModal = !this.showModal;
 			this.type = "view";
+			this.title="查看";
 		},
 		handMesSubmit(){
 			const {

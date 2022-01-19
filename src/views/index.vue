@@ -23,7 +23,8 @@
 					<div class="user-info" v-if="user.id">
 						<div class="user-info-detail">
 							<div class="user-image">
-								<img src="../assets/logo.png"/>
+								<img :src="user.image?PICTURE_HOST+user.image:'../assets/logo.svg'"  />   
+								<!--<img  :src="PICTURE_HOST + user.image"   /> -->
 							</div>
 							<div class="user-info-own">
 								<div class="user-info-name">欢迎 : {{user.userName}}</div>
@@ -71,25 +72,25 @@
 						<div class="sidebar-content">
 							<div class="input-field">
 								<label for="userName">关键字：</label>
-								<input class="input-item" placeholder="请输入产品名" type="text" name="userName" value="" />
+								<input class="input-item" placeholder="请输入产品名" type="text"  v-model="nameSearch"  name="userName" value="" />
 							</div>
 							<div class="input-field">
 								<label for="category">分类：</label>
-								<select name="type" class="input-item">
+								<select name="typeSearch" v-model="typeSearch" class="input-item">
 									<option value="">所有物品类别</option>
 									<option :value="item.id" v-for="(item,i) in typeList" :key="i">{{item.typeDesc}}</option>
 								</select>
 							</div>
 							<div class="input-field">
 								<label for="value">属性：</label>
-								<select name="type" class="input-item">
+								<select name="salesTypeSearch" v-model="salesTypeSearch"  class="input-item">
 									<option value="">所有买卖</option>
 									<option :value="item.id" v-for="(item,i) in salesTypeList" :key="i">{{item.salesTypeDesc}}</option>
 								</select>
 							</div>
 							<div class="input-field">
 								<label for="area">地区：</label>
-								<select name="type" class="input-item">
+								<select name="areaSearch"  v-model="areaSearch" class="input-item">
 									<option value="">所有地区</option>
 									<option :value="item.id" v-for="(item,i) in areaList" :key="i">{{item.areaDesc}}</option>
 								</select>
@@ -179,6 +180,10 @@ export default{
 			areaList:[],
 			salesTypeList:[],
 			recommendList:[],
+			typeSearch:'',
+			salesTypeSearch:'',
+			areaSearch:'',
+			nameSearch:''
 		}
 	},
 	methods:{
@@ -189,8 +194,10 @@ export default{
 			this.$router.push({
 				path:'messageSearch',
 				query:{
-					name:'yzh',
-					email:'1@qq.com'
+					typeSearch:this.typeSearch,
+					salesTypeSearch:this.salesTypeSearch,
+					areaSearch:this.areaSearch,
+					nameSearch:this.nameSearch
 				}
 			});
 		},
@@ -306,6 +313,7 @@ export default{
 			font-size: 17px;
 		}
 		.input-item{
+			padding-left: 3px; 
 			border: none;
 			outline: none;
 			height: 30px;

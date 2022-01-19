@@ -29,7 +29,7 @@
 					<div class="message-total">
 						<div class="message-leave-person">
 							<div class="message-leave-person-image"> 
-								<img src="../assets/logo.png"/>
+								<img :src="item.user.image?PICTURE_HOST+item.user.image:'/img/defaultImg.svg'"/>
 							</div>
 						</div>
 						<div class="message-leave-detailbox">
@@ -71,7 +71,9 @@ export default{
 				size: 10,
 				pages:0,
 				total:0
-			}
+			},
+			tlength:0,
+			isLoad:false
 		}
 	},
 	components:{
@@ -79,9 +81,12 @@ export default{
 	},
 	methods:{
 		submit(){
+			let message = {
+				id:this.$route.query.id
+			};
 			let params = {
 				user:this.user,
-				messageId:this.$route.query.id,
+				message:message,
 				content:this.content
 			}
 			this.axios.post('/comment/save',params).then((res)=>{
@@ -89,7 +94,6 @@ export default{
 				if(data.success){
 					alert(data.message);
 					this.content = '';
-					this.commentList = [];
 					this.getCommentListByMessageId(this.$route.query.id);
 				}
 			})
@@ -98,18 +102,26 @@ export default{
 			if(this.pagination.pageNum < this.pagination.pages){
 				this.pagination.pageNum +=1;
 				this.getCommentListByMessageId(this.$route.query.id);
+				this.isLoad = true;
 			}
 		},
 		getCommentListByMessageId(id){
 			let that = this;
+			let message = {
+				id:id
+			};
 			let param = {
-				messageId:id
+				"message":message
 			};
 			let params = Object.assign(this.pagination,param);
 			this.axios.post('/comment/list',params).then((res)=>{
 				const{data} = res;
 				if(data.success){
 					that.commentList = that.commentList.concat(data.content.list);
+					if(!that.isLoad){
+						that.commentList.splice(0,that.tlength);
+					}
+					that.tlength = that.commentList.length;
 					for(var i = 0 ; i < this.commentList.length ; i++){
 						this.commentList[i].createDate = this.formatDate(this.commentList[i].createDate);
 					}
@@ -156,8 +168,8 @@ export default{
 				.message-content-title{
 					text-align: center;
 					padding-top: 10px;
-					height: 100px;
-					line-height: 100px;
+					height: 80px;
+					line-height: 80px;
 					font-size: 28px;
 					font-weight: bold;
 				}
@@ -189,8 +201,9 @@ export default{
 					position:relative;
 					textarea{
 						width:100%;
-						min-height: 100px;
+						min-height: 120px;
 						padding: 10px 20px 0px;
+						line-height: 20px;
 						border: none;
 						outline: none;
 						font-size: 15px;
