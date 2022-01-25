@@ -1,8 +1,8 @@
 <template>
-	<div class="admin-type">
+	<div class="admin-area">
 		<v-row>
-			<v-col cols="3"> <v-text-field v-model="searchItem.typeName" label="名称" ></v-text-field> </v-col>
-			<v-col cols="3"> <v-text-field v-model="searchItem.typeDesc" label="描述" ></v-text-field> </v-col>
+			<v-col cols="3"> <v-text-field v-model="searchItem.messageTitle" label="标题" ></v-text-field> </v-col>
+			<v-col cols="3"> <v-text-field v-model="searchItem.messageDesc" label="内容" ></v-text-field> </v-col>
 			<v-col  cols="1"> 
 				<v-btn color="primary"  @click="search" > 
 					<v-icon left> mdi-pencil </v-icon>搜索
@@ -18,47 +18,13 @@
     :headers="headers"
     :items="desserts"
     sort-by="calories"
-    class="elevation-1"
+    class="elevation-1  "
   >
     <template v-slot:top>
       <v-toolbar flat >
-        <v-toolbar-title>分类管理</v-toolbar-title>
+        <v-toolbar-title>信息管理</v-toolbar-title>
         <v-divider class="mx-4" inset  vertical ></v-divider>
         <v-spacer></v-spacer>
-        <v-dialog
-          v-model="dialog"
-          max-width="500px"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn  color="primary" dark class="mb-2"  v-bind="attrs"  v-on="on"  > 
-				<v-icon left> mdi-account-plus</v-icon>新增 
-            </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">{{ formTitle }}</span>
-            </v-card-title>
-
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col  cols="12"   >
-                    <v-text-field v-model="editedItem.typeName" label="名称" ></v-text-field>
-                  </v-col>
-                  <v-col cols="12"   >
-                    <v-text-field v-model="editedItem.typeDesc" label="描述"  ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn  color="blue darken-1"  text @click="close" > 取消 </v-btn>
-              <v-btn color="blue darken-1" text @click="save"  > 保存 </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">确定删除?</v-card-title>
@@ -72,8 +38,13 @@
         </v-dialog>
       </v-toolbar>
     </template>
+    <template v-slot:item.messageDesc="{ item }" >
+		<span v-html="setName(item.messageDesc)"></span>
+	</template>
+    <template v-slot:item.messageTitle="{ item }" >
+		<span v-html="setName(item.messageTitle)"></span>
+	</template>
     <template v-slot:item.actions="{ item }">
-      <v-icon  small class="mr-2" @click="editItem(item)" >  mdi-pencil </v-icon>
       <v-icon  small  @click="deleteItem(item)"  > mdi-delete  </v-icon>
     </template>
     <template v-slot:no-data>
@@ -85,33 +56,31 @@
 
 <script>
   export default {
-	name:"adminType",
+	name:"adminArea",
     data: () => ({
       dialog: false,
       dialogDelete: false,
       headers: [
-        { text: '名称', value: 'typeName' },
-        { text: '描述', value: 'typeDesc' },
-        { text: '创建人', value: 'createBy.userName' },
+        { text: '标题', value: 'messageTitle' },
+        { text: '描述', value: 'messageDesc' },
+        { text: '类型', value: 'type.typeDesc' },
+        { text: '区域', value: 'area.areaDesc' },
+        { text: '价格', value: 'price' },
+        { text: '联系方式', value: 'user.phone' },
+        { text: '发布时间', value: 'createDate' },
+        { text: '创建人', value: 'createBy.userName',width:'70px' },
         { text: '创建时间', value: 'createDate' },
-        { text: '修改人', value: 'updateBy.userName' },
+        { text: '修改人', value: 'updateBy.userName' ,width:'70px'},
         { text: '修改时间', value: 'updateDate' },
-        { text: '操作', value: 'actions', sortable: false },
+        { text: '操作', value: 'actions', sortable: false, width:'70px' },
       ],
       desserts: [],
       editedIndex: -1,
       editedItem: {},
       searchItem: {},
       deleteItemObj: {},
-      defaultItem: {
-        name: '',
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
-      },
+      defaultItem: {},
     }),
-
     computed: {
       formTitle () {
         return this.editedIndex === -1 ? '新增' : '修改'
@@ -129,32 +98,32 @@
       this.initialize()
     },
     methods: {
+		setName(e) { //文字超出显示省略号
+			return '<span  title="' + e + '" style="display:inline-block;width: 100%;text-align: center;' +
+				'        overflow : hidden;' +
+				'        text-overflow: ellipsis;' +
+				'        white-space: nowrap;">' + e + '</span>'
+		},
 		reset(){
 			this.searchItem = {};
 			this.search();
 		},
 		search(){
-			this.getTypeList();
+			this.getMessageList();
 		},
       initialize () {
         this.desserts = []
       },
-      editItem (item) {
-        this.editedIndex = this.desserts.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialog = true
-      },
-
       deleteItem (item) {
         this.dialogDelete = true
         this.deleteItemObj = Object.assign({}, item)
       },
 
       deleteItemConfirm () {
-       this.axios.post('/type/delete',this.deleteItemObj).then((res)=>{
+       this.axios.post('/message/delete',this.deleteItemObj).then((res)=>{
 			const{data} = res;
 			if(data.success){
-				this.getTypeList();
+				this.getMessageList();
 			}
         });
         this.closeDelete()
@@ -177,16 +146,16 @@
       },
 
       save () {
-        this.axios.post('/type/save',this.editedItem).then((res)=>{
+        this.axios.post('/message/save',this.editedItem).then((res)=>{
 			const{data} = res;
 			if(data.success){
-				this.getTypeList();
+				this.getMessageList();
 			}
 		})
         this.close()
       },
-      getTypeList(){
-		this.axios.post('/type/list',this.searchItem).then((res)=>{
+      getMessageList(){
+		this.axios.post('/message/list',this.searchItem).then((res)=>{
 			const{data} = res;
 			if(data.success){
 				this.desserts = data.content.list;
@@ -199,10 +168,13 @@
       }
     },
       mounted(){
-		this.getTypeList();
+		this.getMessageList();
 	}
   }
 </script>
 
 <style lang="scss">
+.v-data-table table{
+    table-layout: fixed; 
+}
 </style>

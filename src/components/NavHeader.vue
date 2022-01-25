@@ -7,7 +7,7 @@
 			<div class="header-menu">
 				<ul class="header-menu-wrapper">
 					<li class="header-menu-warpper-item"><router-link to="/#/">市场首页</router-link></li>
-					<li class="divider">|</li><li class="header-menu-warpper-item"><router-link to="/#/">二手指南</router-link></li>
+					<li class="divider">|</li><li class="header-menu-warpper-item"><router-link to="/secondHand">二手指南</router-link></li>
 					<li class="divider">|</li><li class="header-menu-warpper-item"><router-link :to="{path:'/manage',query:{flag:1}}">发布信息</router-link></li>
 					<li class="divider">|</li><li class="header-menu-warpper-item"><router-link to="/#/">联系我们</router-link></li>
 				</ul>

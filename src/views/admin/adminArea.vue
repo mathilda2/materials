@@ -1,22 +1,12 @@
 <template>
-	<div class="admin-user">
+	<div class="admin-area">
 		<v-row>
-			<v-col>
-				<v-text-field v-model="searchItem.userName" label="姓名"  ></v-text-field>
-			</v-col>
-			<v-col>
-				<v-text-field v-model="searchItem.studentNo" label="学号" ></v-text-field>
-			</v-col>
-			<v-col>
-				<v-text-field v-model="searchItem.email" label="E-mail" ></v-text-field>
-			</v-col>
-			<v-col>
-				<v-select :items="items" v-model="searchItem.sex" label="性别" ></v-select>
-			</v-col>
-			<v-col cols="1">
-				<v-btn color="primary"  @click="search">
-					<v-icon left> mdi-account-search</v-icon>搜索
-				</v-btn>
+			<v-col cols="3"> <v-text-field v-model="searchItem.areaName" label="名称" ></v-text-field> </v-col>
+			<v-col cols="3"> <v-text-field v-model="searchItem.areaDesc" label="描述" ></v-text-field> </v-col>
+			<v-col  cols="1"> 
+				<v-btn color="primary"  @click="search" > 
+					<v-icon left> mdi-pencil </v-icon>搜索
+				</v-btn> 
 			</v-col> 
 			<v-col cols="1">
 				<v-btn color="default"  @click="reset">
@@ -27,42 +17,36 @@
   <v-data-table
     :headers="headers"
     :items="desserts"
+    sort-by="calories"
     class="elevation-1"
   >
     <template v-slot:top>
       <v-toolbar flat >
-        <v-toolbar-title>用户管理</v-toolbar-title>
+        <v-toolbar-title>地区管理</v-toolbar-title>
+        <v-divider class="mx-4" inset  vertical ></v-divider>
         <v-spacer></v-spacer>
-        <v-dialog v-model="dialog" max-width="500px"  >
+        <v-dialog
+          v-model="dialog"
+          max-width="500px"
+        >
           <template v-slot:activator="{ on, attrs }">
-            <v-btn color="primary" dark  class="mb-2" v-bind="attrs" v-on="on"  >
-				<v-icon left> mdi-account-plus</v-icon> 新增
+            <v-btn  color="primary" dark class="mb-2"  v-bind="attrs"  v-on="on"  > 
+				<v-icon left> mdi-account-plus</v-icon>新增 
             </v-btn>
           </template>
           <v-card>
             <v-card-title>
               <span class="text-h5">{{ formTitle }}</span>
             </v-card-title>
+
             <v-card-text>
               <v-container>
                 <v-row>
-                  <v-col cols="12"  >
-                    <v-text-field v-model="editedItem.userName" label="用户名" required></v-text-field>
+                  <v-col  cols="12"   >
+                    <v-text-field v-model="editedItem.areaName" label="名称" ></v-text-field>
                   </v-col>
                   <v-col cols="12"   >
-                    <v-text-field v-model="editedItem.studentNo" label="学号" required></v-text-field>
-                  </v-col>
-                  <v-col  cols="12" >
-                    <v-text-field v-model="editedItem.email" label="email"  ></v-text-field>
-                  </v-col>
-                  <v-col  cols="12"  >
-                    <v-select :items="items" v-model="editedItem.sex" label="性别" required></v-select>
-                  </v-col>
-                  <v-col cols="12"  >
-                    <v-text-field v-model="editedItem.phone" label="电话" required></v-text-field>
-                  </v-col>
-                   <v-col cols="12"  >
-                    <v-text-field type="date" v-model="editedItem.birthday" label="生日" required></v-text-field>
+                    <v-text-field v-model="editedItem.areaDesc" label="描述"  ></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
@@ -70,13 +54,12 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close" > 取消 </v-btn>
-              <v-btn  color="blue darken-1"  text @click="save"  > 保存  </v-btn>
+              <v-btn  color="blue darken-1"  text @click="close" > 取消 </v-btn>
+              <v-btn color="blue darken-1" text @click="save"  > 保存 </v-btn>
             </v-card-actions>
-            
           </v-card>
         </v-dialog>
-        <v-dialog v-model="dialogDelete" max-width="500px"  >
+        <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">确定删除?</v-card-title>
             <v-card-actions>
@@ -87,12 +70,11 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-        
       </v-toolbar>
     </template>
     <template v-slot:item.actions="{ item }">
-      <v-icon  middle  class="mr-2"  @click="editItem(item)"  >  mdi-pencil </v-icon>
-      <v-icon  middle @click="deleteItem(item)" >  mdi-delete </v-icon>
+      <v-icon  small class="mr-2" @click="editItem(item)" >  mdi-pencil </v-icon>
+      <v-icon  small  @click="deleteItem(item)"  > mdi-delete  </v-icon>
     </template>
     <template v-slot:no-data>
 		没有数据
@@ -102,20 +84,14 @@
 </template>
 
 <script>
-import {mapState} from 'vuex';
   export default {
-	name:"adminUser",
+	name:"adminArea",
     data: () => ({
-	items: ['男', '女' ],
       dialog: false,
       dialogDelete: false,
       headers: [
-        { text: '用户名', align: 'start', value: 'userName'},
-        { text: '学号', value: 'studentNo' },
-        { text: '性别', value: 'sex' },
-        { text: '生日', value: 'birthday' },
-        { text: '电子邮件', value: 'email' },
-        { text: '电话', value: 'phone' },
+        { text: '名称', value: 'areaName' },
+        { text: '描述', value: 'areaDesc' },
         { text: '创建人', value: 'createBy.userName' },
         { text: '创建时间', value: 'createDate' },
         { text: '修改人', value: 'updateBy.userName' },
@@ -135,11 +111,11 @@ import {mapState} from 'vuex';
         protein: 0,
       },
     }),
+
     computed: {
       formTitle () {
         return this.editedIndex === -1 ? '新增' : '修改'
       },
-      ...mapState(['user'])
     },
     watch: {
       dialog (val) {
@@ -158,10 +134,10 @@ import {mapState} from 'vuex';
 			this.search();
 		},
 		search(){
-			this.getUserList();
+			this.getareaList();
 		},
       initialize () {
-        this.desserts = [ ]
+        this.desserts = []
       },
       editItem (item) {
         this.editedIndex = this.desserts.indexOf(item)
@@ -169,19 +145,21 @@ import {mapState} from 'vuex';
         this.dialog = true
       },
 
-	deleteItem (item) {
-        this.dialogDelete = true;
+      deleteItem (item) {
+        this.dialogDelete = true
         this.deleteItemObj = Object.assign({}, item)
-    },
+      },
+
       deleteItemConfirm () {
-        this.axios.post('/user/delete',this.deleteItemObj).then((res)=>{
+       this.axios.post('/area/delete',this.deleteItemObj).then((res)=>{
 			const{data} = res;
 			if(data.success){
-				this.getUserList();
+				this.getareaList();
 			}
         });
         this.closeDelete()
       },
+
       close () {
         this.dialog = false
         this.$nextTick(() => {
@@ -189,6 +167,7 @@ import {mapState} from 'vuex';
           this.editedIndex = -1
         })
       },
+
       closeDelete () {
         this.dialogDelete = false
         this.$nextTick(() => {
@@ -196,17 +175,18 @@ import {mapState} from 'vuex';
           this.editedIndex = -1
         })
       },
+
       save () {
-		this.axios.post('/user/save',this.editedItem).then((res)=>{
+        this.axios.post('/area/save',this.editedItem).then((res)=>{
 			const{data} = res;
 			if(data.success){
-				this.getUserList();
+				this.getareaList();
 			}
 		})
         this.close()
       },
-      getUserList(){
-		this.axios.post('/user/list',this.searchItem).then((res)=>{
+      getareaList(){
+		this.axios.post('/area/list',this.searchItem).then((res)=>{
 			const{data} = res;
 			if(data.success){
 				this.desserts = data.content.list;
@@ -218,13 +198,11 @@ import {mapState} from 'vuex';
 		})
       }
     },
-	mounted(){
-		this.getUserList();
+      mounted(){
+		this.getareaList();
 	}
   }
 </script>
 
 <style lang="scss">
-.admin-user{
-}
 </style>

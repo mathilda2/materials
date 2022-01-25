@@ -56,11 +56,13 @@ export default{
 			selectedItem: 0,
 			items: [
 				{ text: '用户管理', icon: 'mdi-account-multiple' ,href:'/#/user'},
-				{ text: '类型管理', icon: 'mdi-star' ,href:'/#/type'},
-				{ text: '留言管理', icon: 'mdi-history' ,href:'/#/comment'},
-				{ text: '信息管理', icon: 'mdi-check-circle',href:'/#/message' },
-				{ text: '地区管理', icon: 'mdi-upload' ,href:'/#/area'},
-				{ text: '班级管理', icon: 'mdi-cloud-upload' ,href:'/#/class'},
+				{ text: '分类管理', icon: 'mdi-star' ,href:'/#/type'},
+				{ text: '地区管理', icon: 'mdi-drone' ,href:'/#/area'},
+				{ text: '状态管理', icon: 'mdi-history' ,href:'/#/oldValue'},
+				{ text: '信息管理', icon: 'mdi-message-bulleted',href:'/#/message' },
+				{ text: '属性管理', icon: 'mdi-format-list-bulleted-type' ,href:'/#/salesType'},
+				{ text: '评论管理', icon: 'mdi mdi-comment' ,href:'/#/comment'},
+				{ text: '文章管理', icon: 'mdi mdi-book-open-variant' ,href:'/#/article'},
 			],
 			show:true
 		}

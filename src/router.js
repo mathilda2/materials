@@ -19,6 +19,8 @@ export const constantRouterMap = [
       { path: '/leaveCenter', component: () => import('@/views/leaveCenter') },
       { path: '/messageDetail', component: () => import('@/views/messageDetail') },
       { path: '/messageSearch', component: () => import('@/views/messageSearch') },
+      { path: '/secondHand', component: () => import('@/views/secondHand') },
+      { path: '/secondHandDetail', component: () => import('@/views/secondHandDetail') },
       { 
 				path: '/messageCenter', 
 				component: () => import('@/views/messageCenter'),
@@ -52,6 +54,36 @@ export const constantRouterMap = [
 						path:'/type',
 						name:'type',
 						component:() => import('@/views/admin/adminType'),
+					},
+					{
+						path:'/area', 
+						name:'area',
+						component:() => import('@/views/admin/adminArea'),
+					},
+					{
+						path:'/oldValue', 
+						name:'oldValue',
+						component:() => import('@/views/admin/adminOldValue'),
+					},
+					{
+						path:'/salesType', 
+						name:'salesType',
+						component:() => import('@/views/admin/adminSalesType'),
+					},
+					{
+						path:'/message', 
+						name:'message',
+						component:() => import('@/views/admin/adminMessage'),
+					},
+					{
+						path:'/comment', 
+						name:'comment',
+						component:() => import('@/views/admin/adminComment'),
+					},
+					{
+						path:'/article', 
+						name:'article',
+						component:() => import('@/views/admin/adminArticle'),
 					},
 				]
   },
