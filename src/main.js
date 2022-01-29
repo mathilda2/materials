@@ -13,10 +13,14 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import { createSimpleTransition } from 'vuetify/lib/components/transitions/createTransition'
 import store from './store'
 import formatDate from './util/date.js'
+import BaiduMap from 'vue-baidu-map';
 
 Vue.config.productionTip = false
 Vue.use(Antd); 
 Vue.use(message);
+Vue.use(BaiduMap, {
+  ak: 'u8DbydWfNX8lV7vC0BnqCqZWe9NAcj5V'//这里是你申请的key
+})
 Vue.prototype.formatDate = formatDate;
 Vue.prototype.$message=message;
 Vue.prototype.PICTURE_HOST =  process.env.VUE_APP_PICTURE_HOST;

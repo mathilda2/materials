@@ -6,35 +6,30 @@
 					<img src="../../public/img/school.jpg"/>
 				</div>
 				<div class="second-detail-box">
-					<div class="second-detail" v-for="(item,i) in 10" :key="i">
+					<div class="second-detail" v-for="(item,i) in list" :key="i">
 						<div class="second-detail-image">
 							<img src="../../public/img/2.jpg"/>
 						</div>
 						<div class="second-detail-content">
 							<div class="second-detail-content-title">
-								选购产品需要注意的东西
+								{{item.title}}
 							</div>
 							<div class="second-detail-content-authdate">
 								<img src="../../public/img/user.svg"/>
-								<span class="second-detail-name">math</span>
+								<span class="second-detail-name">{{item.createBy.userName}}</span>
 								<img src="../../public/img/clock.svg"/>
-								<span class="second-detail-date">2022年1月23日</span>
+								<span class="second-detail-date">{{item.createDate}}</span>
 								<img src="../../public/img/length.svg"/>
-								<span class="second-detail-length">233字</span>
+								<span class="second-detail-length">{{item.content.length}}字</span>
 							</div>
 							<div class="second-detail-real" >
-								<a href="/#/secondHandDetail">时发生的房卡收到flash啦睡觉让问问我我额我是非得失是多少 是法律考试卡赛力克埃里克森卡莉法赛力克艾克赛德发甲硫氨酸福利卡打算发是是是
-								时发生的房卡收到flash啦睡觉让问问我我额我是非得失是多少 是法律考试卡赛力克埃里克森卡莉法赛力克艾克赛德发甲硫氨酸福利卡打算发是是是
-								时发生的房卡收到flash啦睡觉让问问我我额我是非得失是多少 是法律考试卡赛力克埃里克森卡莉法赛力克艾克赛德发甲硫氨酸福利卡打算发是是是
-								时发生的房卡收到flash啦睡觉让问问我我额我是非得失是多少 是法律考试卡赛力克埃里克森卡莉法赛力克艾克赛德发甲硫氨酸福利卡打算发是是是
-								时发生的房卡收到flash啦睡觉让问问我我额我是非得失是多少 是法律考试卡赛力克埃里克森卡莉法赛力克艾克赛德发甲硫氨酸福利卡打算发是是是
-								</a>
+								<router-link :to="{path:'/secondHandDetail',query:{id:item.id}}">{{item.content}}</router-link> 
 							</div> 
 						</div>
 					</div>
 				</div>
 				<div class="second-detail-pagination">
-					<v-pagination v-model="current" @input="changePage" :length="total"  ></v-pagination>
+					<v-pagination v-model="pagination.current" @input="changePage" :length="pagination.pages"  ></v-pagination>
 				</div>
 			</div>
 		</div>
@@ -42,66 +37,49 @@
 </template>
 
 <script>
-import {mapState} from 'vuex';
 export default{
 	name:'secondHand',
 	data(){
 		return{
 			list:[],
-			textSize:0,
-			content:'',
-			second:{},
-			secondList:[],
-			total:8,
-			current: 2,
 			pagination:{
+				current: 1,
 				pageNum:1,
-				size: 10,
-				pages:0,
-				total:1
+				pageSize: 4,
+				pages:1
 			},
-			tlength:0,
-			isLoad:false
 		}
 	},
 	components:{
 	},
 	methods:{
 		changePage(e){
-			console.log(e);
+			this.getArticleList({
+				"pageNum":e,
+				"pageSize":this.pagination.pageSize
+			});
 		},
-		loadmore(){
-			if(this.pagination.pageNum < this.pagination.pages){
-				this.pagination.pageNum +=1;
-				this.getCommentListByMessageId(this.$route.query.id);
-				this.isLoad = true;
-			}
-		},
-		getSecondList(params){
-			this.axios.post('/message/list',{
-				"user":{"id":this.user.id},
+		getArticleList(params){
+			this.axios.post('/article/list',{
 				"pageNum":params.pageNum,
 				"size":params.pageSize
 			}).then((res)=>{
 				const {data} = res;
-				this.data = data.content.list;
-				this.pagination.total = data.content.total;
+				this.list = data.content.list;
+				this.pagination.pages = data.content.pages;
 				this.pagination.current =params.pageNum;
-				for(var i = 0 ; i < this.data.length ; i++){
-					this.data[i].createDate = this.formatDate(this.data[i].createDate);
+				for(var i = 0 ; i < this.list.length ; i++){
+					this.list[i].createDate = this.formatDate(this.list[i].createDate);
 				}
 			});
 		},
 	},
 	mounted(){
-		this.getSecondList({
+		this.getArticleList({
 			pageNum:this.pagination.current,
 			pageSize:this.pagination.pageSize
 		});
-	},
-	computed:{
-		...mapState(['user'])
-	}
+	} 
 }
 </script>
 

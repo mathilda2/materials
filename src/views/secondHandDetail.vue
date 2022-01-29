@@ -3,13 +3,10 @@
 		<div class="containerT">
 			<div class="content">
 				<div class="second-detail-article">
-					<div class="second-detail-article-title">时发生的房卡收到顺丰ss发顺丰 </div>
-					<div class="second-detail-article-authdate">作者：math 时间：2022年1月24日 字数：121</div>
+					<div class="second-detail-article-title">{{article.title}} </div>
+					<div class="second-detail-article-authdate">作者：{{article.createBy.userName}} 时间：{{article.createDate}} 字数：{{article.content.length}}</div>
 					<div class="second-detail-article-content">
-						sfs中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍
-						中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍
-						中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍
-						fsd林克件了靳连看看中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍中国疫情可能暴增5倍到10倍
+						{{article.content}}
 					</div>
 				</div>
 			</div>
@@ -22,34 +19,26 @@ export default{
 	name:'secondHand',
 	data(){
 		return{
-			list:[],
 			content:'',
-			second:{},
+			article:{},
 		}
 	},
 	components:{
 	},
 	methods:{
-		changePage(e){
-			console.log(e);
-		},
-		getSecondList(params){
-			this.axios.post('/message/list',{
-				"user":{"id":this.user.id},
-				"pageNum":params.pageNum,
-				"size":params.pageSize
-			}).then((res)=>{
-				const {data} = res;
-				this.data = data.content.list;
-				this.pagination.total = data.content.total;
-				this.pagination.current =params.pageNum;
-				for(var i = 0 ; i < this.data.length ; i++){
-					this.data[i].createDate = this.formatDate(this.data[i].createDate);
+		getArticleDetail(id){
+			let that = this;
+			this.axios.post('/article/getArticleDetail',{id:id}).then((res)=>{
+				const{data} = res;
+				if(data.success){
+					that.article = data.content;
+					that.article.createDate = this.formatDate(that.article.createDate);
 				}
 			});
-		},
+		}
 	},
 	mounted(){
+		this.getArticleDetail(this.$route.query.id);
 	} 
 }
 </script>
@@ -65,9 +54,9 @@ export default{
 			margin-bottom: 10px;
 			.second-detail-article{
 				margin-top: 10px;
-				background:#fff;
+				background:#fff; 
+				min-height: 520px;
 				.second-detail-article-title{
-					border: 1px solid red;
 					text-align: center;
 					font-size: 45px;
 					font-weight: bold;
@@ -76,11 +65,14 @@ export default{
 					padding-bottom: 30px;
 				}
 				.second-detail-article-authdate{
-					border: 1px solid red;
 					text-align: center;
+					margin-bottom: 50px;
 				}
 				.second-detail-article-content{
-					border: 1px solid red;
+					font-size: 20px;
+					line-height: 2;
+					text-indent:2em;
+					padding:  0px 30px ;
 				}
 			}
 		}

@@ -104,17 +104,11 @@
 					<div class="top-list">
 						<div class="top-search-title">top排行</div>
 						<div class="sidebar-content">
-							<ul class="top-content">
-								<li class="top-item"><span class="top-item-num active">1</span><a href="javascript:;">中南大学主校区与南校区之间中南大学中南大学</a></li>
-								<li class="top-item"><span class="top-item-num active">2</span><a href="javascript:;">求购电动车一辆，看车满意马上就22</a></li>
-								<li class="top-item"><span class="top-item-num active">3</span><a href="javascript:;">中南大学主校区wwwwwssss与南校区之间</a></li>
-								<li class="top-item"><span class="top-item-num">4</span><a href="javascript:;">全新抗震折叠自行车</a> </li>
-								<li class="top-item"><span class="top-item-num">5</span><a href="javascript:;">全新抗震折叠自行车</a> </li>
-								<li class="top-item"><span class="top-item-num">6</span><a href="javascript:;">中南大学主校区与南校区之间</a></li>
-								<li class="top-item"><span class="top-item-num">7</span><a href="javascript:;">求购二手电动车一台</a></li>
-								<li class="top-item"><span class="top-item-num">8</span><a href="javascript:;">求购长沙到泰安（或济南）卧铺票 </a> </li>
-								<li class="top-item"><span class="top-item-num">9</span><a href="javascript:;">转让东塘附近家教一份 </a> </li>
-								<li class="top-item"><span class="top-item-num">10</span><a href="javascript:;">低价出售全新原装诺基亚N95</a></li>
+							<ul class="top-content" >
+								<li class="top-item"  v-for="(item,i) in topList" :key="i">
+									<span  :class="[i<3?'top-item-num active':'top-item-num']" >{{i+1}}</span>
+									<router-link :to="{path:'/messageDetail',query:{id:item.id}}">{{item.messageTitle}}</router-link> 
+								</li>
 							</ul>
 						</div>
 					</div>
@@ -125,7 +119,9 @@
 						<div class="list" v-for="(item,i) in recommendList" :key="i">
 							<div class="list-title">
 								<div class="list-title-name">{{item.typeDesc}}</div>
-								<div class="list-title-more"><a href="javascript:;">更多</a></div>
+								<div class="list-title-more">
+									<router-link v-if="item.childList.length>0" :to="{path:'/messageMore',query:{id:item.id}}">更多</router-link> 
+								</div>
 							</div>
 							<ul class="list-item" v-if="item.childList.length>0">
 								<li class="list-item-content"  v-for="(childItem,j) in item.childList" :key="j">
@@ -180,6 +176,7 @@ export default{
 			areaList:[],
 			salesTypeList:[],
 			recommendList:[],
+			topList:[],
 			typeSearch:'',
 			salesTypeSearch:'',
 			areaSearch:'',
@@ -277,9 +274,18 @@ export default{
 					this.recommendList = data.content;
 				}
 			});
+		},
+		getTopList(){
+			this.axios.post('/message/getTopList',{}).then((res)=>{
+				const{data} = res;
+				if(data.success){
+					this.topList = data.content.list;
+				}
+			});
 		}
 	},
 	mounted(){
+		this.getTopList();
 		this.getAreaList();
 		this.getTypeList();
 		this.getSalesTypeList();

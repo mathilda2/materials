@@ -21,6 +21,7 @@ export const constantRouterMap = [
       { path: '/messageSearch', component: () => import('@/views/messageSearch') },
       { path: '/secondHand', component: () => import('@/views/secondHand') },
       { path: '/secondHandDetail', component: () => import('@/views/secondHandDetail') },
+      { path: '/messageMore', component: () => import('@/views/messageMore') },
       { 
 				path: '/messageCenter', 
 				component: () => import('@/views/messageCenter'),
@@ -44,6 +45,7 @@ export const constantRouterMap = [
     path: '/admin',
     name:'admin',
     component: Admin,
+    redirect:'/user',
     children:[
 					{
 						path:'/user',
